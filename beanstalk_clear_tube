@@ -1,0 +1,13 @@
+#!/bin/bash
+QUEUE_HOST=$1
+TUBE=$2
+while true
+do
+    JOBID=$(echo -e "use ${TUBE}\r\npeek-ready\r\n" | nc ${QUEUE_HOST} 11300 |  grep -a FOUND | awk '{print $2}')
+    if [ $JOBID ]; then
+        echo -e "use ${TUBE}\r\ndelete ${JOBID}\r\n" | nc ${QUEUE_HOST} 11300
+    else
+        echo "Done!"
+        break
+    fi
+done
